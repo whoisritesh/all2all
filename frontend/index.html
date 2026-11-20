@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>all2all</title>
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Official IIT Bombay Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    :root {
+      --iitb-navy: #002147;
+      --iitb-navy-dark: #00152e;
+      --iitb-blue: #005596;
+      --iitb-blue-soft: #e8f1f8;
+      --iitb-gold: #D97706;
+      --iitb-gold-hover: #B45309;
+      --iitb-gold-soft: #FEF3C7;
+      --bg-page: #F1F5F9;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text-main: #0F172A;
+      --text-muted: #475569;
+      --shadow-md: 0 8px 24px rgba(0, 33, 71, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, .serif { font-family: 'Merriweather', Georgia, serif; }
+
+    .utility-bar {
+      background: var(--iitb-navy-dark);
+      color: #CBD5E1;
+      font-size: 0.76rem;
+      padding: 6px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .engine-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.1);
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .dot.offline { background: #f59e0b; box-shadow: none; }
+
+    header {
+      background: linear-gradient(135deg, var(--iitb-navy) 0%, #003166 100%);
+      color: #FFFFFF;
+      border-bottom: 4px solid var(--iitb-gold);
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 15px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; }
+
+    .crest {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #000000;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--iitb-gold);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+    }
+
+    .crest img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand-text h1 { font-size: 1.55rem; letter-spacing: 0.4px; }
+
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: rgba(0,0,0,0.25);
+      padding: 5px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: #E2E8F0;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .tab-btn.active { background: #FFFFFF; color: var(--iitb-navy); }
+
+    main {
+      max-width: 1380px;
+      width: 100%;
+      margin: 22px auto;
+      padding: 0 24px;
+      flex: 1;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 22px;
+    }
+
+    .section-title { font-size: 1.22rem; color: var(--iitb-navy); margin-bottom: 4px; }
+    .section-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 18px; }
+
+    .cat-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .cat-pill {
+      padding: 6px 13px;
+      border-radius: 999px;
+      border: 1px solid #CBD5E1;
+      background: #F8FAFC;
+      color: var(--iitb-navy);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .cat-pill:hover { border-color: var(--iitb-blue); background: var(--iitb-blue-soft); }
+    .cat-pill.active { background: var(--iitb-navy); color: #FFFFFF; border-color: var(--iitb-navy); }
+
+    .dropzone {
+      border: 2px dashed var(--iitb-blue);
+      background: linear-gradient(180deg, #f0f7ff 0%, #e6f0fa 100%);
+      border-radius: 12px;
+      padding: 34px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      background: #dbeafe;
+      border-color: var(--iitb-navy);
+      transform: translateY(-1px);
+    }
+
+    .format-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 12px; }
+    .chip {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      color: var(--iitb-navy);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 820px) { .controls-grid { grid-template-columns: 1fr; } }
+
+    .control-group { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+    select, input[type="text"], input[type="number"], textarea {
+      padding: 9px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      background: #fff;
+    }
+
+    .adv-panel {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-primary { background: var(--iitb-navy); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--iitb-blue); }
+    .btn-gold { background: var(--iitb-gold); color: #FFFFFF; box-shadow: 0 2px 8px rgba(217,119,6,0.28); }
+    .btn-gold:hover { background: var(--iitb-gold-hover); }
+    .btn-outline { background: #FFFFFF; color: var(--iitb-navy); border: 1px solid #CBD5E1; }
+    .btn-outline:hover { background: #F1F5F9; }
+    .btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 0.88rem; }
+    th { background: var(--iitb-navy); color: #FFFFFF; text-align: left; padding: 10px 12px; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 0.74rem; font-weight: 700; }
+    .badge-ready { background: #E0F2FE; color: #0369A1; }
+    .badge-working { background: #FEF3C7; color: #B45309; }
+    .badge-done { background: #DCFCE7; color: #15803D; }
+
+    .size-mode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .size-mode-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      background: #F8FAFC;
+      transition: all 0.15s;
+    }
+
+    .size-mode-card.active {
+      border-color: var(--iitb-gold);
+      background: var(--iitb-gold-soft);
+      box-shadow: 0 4px 12px rgba(217,119,6,0.14);
+    }
+
+    .preset-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .preset-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #CBD5E1;
+      background: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .preset-btn:hover { background: var(--iitb-navy); color: #fff; }
+
+    .pair-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 8px;
+      max-height: 460px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .pair-tag {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--iitb-navy);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pair-tag:hover { border-color: var(--iitb-gold); background: var(--iitb-gold-soft); }
+
+    .split-io { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 840px) { .split-io { grid-template-columns: 1fr; } }
+
+    textarea.code-box {
+      width: 100%;
+      height: 280px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.84rem;
+      resize: vertical;
+      background: #F8FAFC;
+    }
+
+    footer {
+      background: var(--iitb-navy);
+      color: #CBD5E1;
+      text-align: center;
+      padding: 15px 24px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-top: 36px;
+      border-top: 3px solid var(--iitb-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <span>all2all</span>
+    <span class="engine-pill">
+      <span id="engineDot" class="dot offline"></span>
+      <span id="engineLabel">Connecting to Python Engine...</span>
+    </span>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="crest">
+          <img src="/logo.png" alt="all2all logo" />
+        </div>
+        <div class="brand-text">
+          <h1>all2all</h1>
+        </div>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="tab-btn active" onclick="switchMode('files', this)">📁 Any-to-Any Converter</button>
+        <button class="tab-btn" onclick="switchMode('sizer', this)">⚖️ MB ↔ KB Reducer & Enhancer</button>
+        <button class="tab-btn" onclick="switchMode('text', this)">⚡ Instant Text / Data Studio</button>
+        <button class="tab-btn" onclick="switchMode('matrix', this)">🧭 2,000+ Conversions Explorer</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= TAB 1: ANY-TO-ANY FILE CONVERTER ================= -->
+    <section id="mode-files" class="panel active">
+      <div class="card">
+        <h2 class="section-title">Universal Any-to-Any File Converter</h2>
+        <p class="section-sub">Convert any file into any other format—documents, images, vectors, spreadsheets, databases, code, archives, or bioinformatics sequences.</p>
+
+        <div class="cat-bar">
+          <button class="cat-pill active" onclick="filterTargets('ALL', this)">All 49 Formats</button>
+          <button class="cat-pill" onclick="filterTargets('Documents & E-Books', this)">Documents & E-Books</button>
+          <button class="cat-pill" onclick="filterTargets('Images & Vector', this)">Images & Vector</button>
+          <button class="cat-pill" onclick="filterTargets('Spreadsheets & Databases', this)">Spreadsheets & Databases</button>
+          <button class="cat-pill" onclick="filterTargets('Presentations', this)">Presentations</button>
+          <button class="cat-pill" onclick="filterTargets('Bioinformatics & Sequence', this)">Bioinformatics</button>
+          <button class="cat-pill" onclick="filterTargets('Web, Code & Encoding', this)">QR / Base64 / Hex / Archives</button>
+        </div>
+
+        <div id="dropzone" class="dropzone" onclick="document.getElementById('fileInput').click()">
+          <h3 style="color:var(--iitb-navy);margin-bottom:6px;">Drop any files here or click to browse</h3>
+          <p style="font-size:0.86rem;color:var(--text-muted);">Supports single files, mixed batch conversions (auto-ZIP), and multi-file PDF merging</p>
+          <div class="format-chips" id="heroFormatChips"></div>
+          <input type="file" id="fileInput" multiple hidden onchange="handleFiles(this.files)" />
+        </div>
+
+        <div class="controls-grid">
+          <div class="control-group">
+            <label for="targetFormat" style="font-weight:700;color:var(--iitb-navy);">Convert All To:</label>
+            <select id="targetFormat" style="min-width:260px;font-weight:600;"></select>
+
+            <label style="display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;cursor:pointer;">
+              <input type="checkbox" id="mergeIntoPdfCheck" />
+              Merge all uploaded files into 1 PDF
+            </label>
+          </div>
+
+          <div class="control-group">
+            <button class="btn btn-outline" onclick="clearQueue()">Clear Queue</button>
+            <button class="btn btn-gold" onclick="convertAll()">⚡ Convert & Download</button>
+          </div>
+        </div>
+
+        <div class="adv-panel">
+          <strong style="color:var(--iitb-navy);">Transformation Controls:</strong>
+          <label>Quality: <input type="number" id="optQuality" value="92" min="10" max="100" style="width:66px;padding:4px 8px;" /> %</label>
+          <label>Resize Width (px): <input type="number" id="optResizeW" value="0" min="0" max="10000" style="width:82px;padding:4px 8px;" /></label>
+          <label>Rotate:
+            <select id="optRotate" style="padding:4px 8px;">
+              <option value="0">0°</option>
+              <option value="90">90° CW</option>
+              <option value="180">180°</option>
+              <option value="270">270° CCW</option>
+            </select>
+          </label>
+          <label>PDF DPI:
+            <select id="optDpi" style="padding:4px 8px;">
+              <option value="120">120 DPI</option>
+              <option value="170" selected>170 DPI</option>
+              <option value="300">300 DPI</option>
+            </select>
+          </label>
+          <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;">
+            <input type="checkbox" id="optGrayscale" /> Grayscale
+          </label>
+        </div>
+
+        <table id="queueTable" style="display:none">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Source</th>
+              <th>Size</th>
+              <th>Per-File Override Target</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="queueBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: HIGH MB <-> LOW KB REDUCER & ENHANCER ================= -->
+    <section id="mode-sizer" class="panel">
+      <div class="card">
+        <h2 class="section-title">Universal File Size Reducer (High MB → Low KB) & HD Enhancer (Low KB → High MB)</h2>
+        <p class="section-sub">Works on Images (JPG, PNG, WEBP, TIFF, BMP), PDFs, Office Documents, Archives, and any binary or text file.</p>
+
+        <div class="size-mode-grid">
+          <div class="size-mode-card active" id="card-reduce" onclick="selectSizeMode('reduce')">
+            <h3 style="font-size:1rem;color:var(--iitb-navy);margin-bottom:4px;">📉 High MB → Low KB Compressor</h3>
+            <p style="font-size:0.82rem;color:var(--text-muted);">Shrink large MB photos, scanned PDFs, or documents down to exact KB limits (e.g., 20 KB, 50 KB, 100 KB, 200 KB).</p>
+          </div>
+
+          <div class="size-mode-card" id="card-enhance" onclick="selectSizeMode('enhance')">
+            <h3 style="font-size:1rem;color:var(--iitb-navy);margin-bottom:4px;">📈 Low KB → High MB Upscaler & Enhancer</h3>
+            <p style="font-size:0.82rem;color:var(--text-muted);">Upscale resolution, sharpen edges, boost 300-DPI print clarity, and expand file size up to your target MB threshold.</p>
+          </div>
+
+          <div class="size-mode-card" id="card-hd_only" onclick="selectSizeMode('hd_only')">
+            <h3 style="font-size:1rem;color:var(--iitb-navy);margin-bottom:4px;">✨ Pure Visual HD Enhancer</h3>
+            <p style="font-size:0.82rem;color:var(--text-muted);">Apply Lanczos super-resolution upscaling, denoise filtering, sharpness, and contrast enhancement without forcing a fixed byte target.</p>
+          </div>
+        </div>
+
+        <div id="sizerDropzone" class="dropzone" onclick="document.getElementById('sizerFileInput').click()">
+          <h3 style="color:var(--iitb-navy);margin-bottom:6px;">Drop files here to Compress (MB→KB) or Enhance (KB→MB)</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);">Supports JPG, PNG, WEBP, PDF, DOCX, PPTX, XLSX, ZIP, TXT, and any other file type</p>
+          <input type="file" id="sizerFileInput" multiple hidden onchange="handleSizerFiles(this.files)" />
+        </div>
+
+        <div class="adv-panel" style="margin-top:18px;">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;width:100%;justify-content:space-between;">
+            <div class="control-group">
+              <strong style="color:var(--iitb-navy);">Target File Size:</strong>
+              <input type="number" id="targetSizeVal" value="100" min="1" step="any" style="width:95px;font-weight:700;" />
+              <select id="targetSizeUnit" style="font-weight:700;">
+                <option value="KB" selected>KB (Kilobytes)</option>
+                <option value="MB">MB (Megabytes)</option>
+              </select>
+
+              <div class="preset-pills">
+                <button type="button" class="preset-btn" onclick="applySizePreset('reduce', 20, 'KB')">20 KB (Signature)</button>
+                <button type="button" class="preset-btn" onclick="applySizePreset('reduce', 50, 'KB')">50 KB (Photo)</button>
+                <button type="button" class="preset-btn" onclick="applySizePreset('reduce', 200, 'KB')">200 KB (Form PDF)</button>
+                <button type="button" class="preset-btn" onclick="applySizePreset('enhance', 2, 'MB')">2 MB (HD)</button>
+                <button type="button" class="preset-btn" onclick="applySizePreset('enhance', 5, 'MB')">5 MB (Print Pro)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <button class="btn btn-outline" onclick="clearSizerQueue()">Clear</button>
+              <button class="btn btn-gold" onclick="runSizeTransform()">🚀 Process & Download</button>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding-top:10px;border-top:1px solid var(--border);width:100%;">
+            <strong style="color:var(--iitb-navy);">Enhancement Filters:</strong>
+            <label>Upscale Factor:
+              <select id="enhUpscale" style="padding:4px 8px;">
+                <option value="1.0">1.0x (Original)</option>
+                <option value="1.5" selected>1.5x Lanczos</option>
+                <option value="2.0">2.0x HD</option>
+                <option value="3.0">3.0x Ultra</option>
+              </select>
+            </label>
+            <label>Sharpness: <input type="number" id="enhSharpness" value="1.35" step="0.05" min="0.5" max="3.0" style="width:68px;padding:4px 6px;" /></label>
+            <label>Contrast: <input type="number" id="enhContrast" value="1.08" step="0.05" min="0.5" max="2.5" style="width:68px;padding:4px 6px;" /></label>
+            <label>Brightness: <input type="number" id="enhBrightness" value="1.02" step="0.05" min="0.5" max="2.0" style="width:68px;padding:4px 6px;" /></label>
+            <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;">
+              <input type="checkbox" id="enhDenoise" checked /> Denoise Smoothing
+            </label>
+          </div>
+        </div>
+
+        <table id="sizerTable" style="display:none">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Original Size</th>
+              <th>Target</th>
+              <th>Output Size</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sizerBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: INSTANT TEXT / DATA / CODE STUDIO ================= -->
+    <section id="mode-text" class="panel">
+      <div class="card">
+        <h2 class="section-title">Instant Text, Data, Code & Sequence Converter</h2>
+        <p class="section-sub">Paste raw JSON, Markdown, CSV, YAML, XML, SQL, TOML, or FASTA directly and convert to any target format.</p>
+
+        <div class="controls-grid" style="margin-top:0;padding-top:0;border-top:none;margin-bottom:14px;">
+          <div class="control-group">
+            <label style="font-weight:600;color:var(--iitb-navy);">Input Format:</label>
+            <select id="rawSrcFormat">
+              <option value="txt">Plain Text (.txt)</option>
+              <option value="md">Markdown (.md)</option>
+              <option value="json">JSON (.json)</option>
+              <option value="csv">CSV (.csv)</option>
+              <option value="yaml">YAML (.yaml)</option>
+              <option value="xml">XML (.xml)</option>
+              <option value="html">HTML (.html)</option>
+              <option value="fasta">FASTA (.fasta)</option>
+              <option value="fastq">FASTQ (.fastq)</option>
+            </select>
+            <label style="font-weight:600;color:var(--iitb-navy);">Output Format:</label>
+            <select id="rawTgtFormat"></select>
+          </div>
+
+          <div class="control-group">
+            <button class="btn btn-outline btn-sm" onclick="loadSampleData('json')">Sample JSON</button>
+            <button class="btn btn-outline btn-sm" onclick="loadSampleData('fasta')">Sample FASTA</button>
+            <button class="btn btn-outline btn-sm" onclick="loadSampleData('md')">Sample Markdown</button>
+            <button class="btn btn-gold" onclick="convertRawText()">⚡ Convert & Download</button>
+          </div>
+        </div>
+
+        <div class="split-io">
+          <div>
+            <label style="font-weight:600;font-size:0.84rem;display:block;margin-bottom:6px;">Paste Input Content:</label>
+            <textarea id="rawInputArea" class="code-box" placeholder="Paste Markdown, JSON, CSV, YAML, XML, FASTA, or plain text here..."></textarea>
+          </div>
+          <div>
+            <label style="font-weight:600;font-size:0.84rem;display:block;margin-bottom:6px;">Live Converted Preview:</label>
+            <textarea id="rawPreviewArea" class="code-box" readonly placeholder="Converted output preview appears here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: 2,000+ CONVERSION PAIRS EXPLORER ================= -->
+    <section id="mode-matrix" class="panel">
+      <div class="card">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;">
+          <div>
+            <h2 class="section-title" id="pairCountHeading">2,352 Supported Any-to-Any Conversion Pairs</h2>
+            <p class="section-sub" style="margin-bottom:0;">Search any conversion pair (e.g., <code>JPG to PDF</code>, <code>FASTA to CSV</code>, <code>JSON to SQLITE</code>) and click to select it immediately.</p>
+          </div>
+          <input type="text" id="pairSearchInput" placeholder="Search e.g. 'pdf to pptx' or 'fasta'..." oninput="renderAllPairs()" style="min-width:270px;" />
+        </div>
+        <div class="pair-grid" id="pairGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    all2all
+  </footer>
+
+  <script>
+    const API_BASE = window.location.origin.startsWith("http")
+      ? window.location.origin
+      : "http://127.0.0.1:8000";
+
+    const FORMAT_OPTIONS = [
+      { cat: "Documents & E-Books", value: "pdf", label: "PDF Document (.pdf)" },
+      { cat: "Documents & E-Books", value: "docx", label: "Microsoft Word (.docx)" },
+      { cat: "Documents & E-Books", value: "rtf", label: "Rich Text Format (.rtf)" },
+      { cat: "Documents & E-Books", value: "txt", label: "Plain Text (.txt)" },
+      { cat: "Documents & E-Books", value: "md", label: "Markdown (.md)" },
+      { cat: "Documents & E-Books", value: "html", label: "HTML5 Web Page (.html)" },
+      { cat: "Documents & E-Books", value: "epub", label: "EPUB E-Book (.epub)" },
+      { cat: "Documents & E-Books", value: "tex", label: "LaTeX Source (.tex)" },
+      { cat: "Documents & E-Books", value: "org", label: "Org-Mode Document (.org)" },
+      { cat: "Documents & E-Books", value: "rst", label: "reStructuredText (.rst)" },
+      { cat: "Documents & E-Books", value: "adoc", label: "AsciiDoc (.adoc)" },
+
+      { cat: "Presentations", value: "pptx", label: "PowerPoint Deck (.pptx)" },
+
+      { cat: "Images & Vector", value: "jpg", label: "JPEG Image (.jpg)" },
+      { cat: "Images & Vector", value: "png", label: "PNG Image (.png)" },
+      { cat: "Images & Vector", value: "webp", label: "WEBP Image (.webp)" },
+      { cat: "Images & Vector", value: "bmp", label: "Bitmap Image (.bmp)" },
+      { cat: "Images & Vector", value: "tiff", label: "TIFF High-Res (.tiff)" },
+      { cat: "Images & Vector", value: "gif", label: "GIF Image (.gif)" },
+      { cat: "Images & Vector", value: "ico", label: "Windows Favicon (.ico)" },
+      { cat: "Images & Vector", value: "svg", label: "SVG Vector (.svg)" },
+      { cat: "Images & Vector", value: "eps", label: "EPS PostScript (.eps)" },
+      { cat: "Images & Vector", value: "ppm", label: "Portable Pixmap (.ppm)" },
+      { cat: "Images & Vector", value: "tga", label: "Truevision TGA (.tga)" },
+
+      { cat: "Spreadsheets & Databases", value: "xlsx", label: "Microsoft Excel (.xlsx)" },
+      { cat: "Spreadsheets & Databases", value: "csv", label: "CSV Table (.csv)" },
+      { cat: "Spreadsheets & Databases", value: "tsv", label: "TSV Table (.tsv)" },
+      { cat: "Spreadsheets & Databases", value: "json", label: "JSON Data (.json)" },
+      { cat: "Spreadsheets & Databases", value: "jsonl", label: "JSON Lines (.jsonl)" },
+      { cat: "Spreadsheets & Databases", value: "yaml", label: "YAML Data (.yaml)" },
+      { cat: "Spreadsheets & Databases", value: "toml", label: "TOML Config (.toml)" },
+      { cat: "Spreadsheets & Databases", value: "ini", label: "INI Config (.ini)" },
+      { cat: "Spreadsheets & Databases", value: "env", label: "DotEnv File (.env)" },
+      { cat: "Spreadsheets & Databases", value: "xml", label: "XML Data (.xml)" },
+      { cat: "Spreadsheets & Databases", value: "sql", label: "SQL Script (.sql)" },
+      { cat: "Spreadsheets & Databases", value: "sqlite", label: "SQLite Database (.sqlite)" },
+
+      { cat: "Bioinformatics & Sequence", value: "fasta", label: "FASTA Sequence (.fasta)" },
+      { cat: "Bioinformatics & Sequence", value: "fastq", label: "FASTQ Reads (.fastq)" },
+      { cat: "Bioinformatics & Sequence", value: "gbk", label: "GenBank Flatfile (.gbk)" },
+      { cat: "Bioinformatics & Sequence", value: "gff3", label: "GFF3 Annotation (.gff3)" },
+      { cat: "Bioinformatics & Sequence", value: "bed", label: "BED Intervals (.bed)" },
+      { cat: "Bioinformatics & Sequence", value: "vcf", label: "VCF Variant Call (.vcf)" },
+      { cat: "Bioinformatics & Sequence", value: "sam", label: "SAM Alignment (.sam)" },
+
+      { cat: "Web, Code & Encoding", value: "qr_png", label: "QR Code PNG (.png)" },
+      { cat: "Web, Code & Encoding", value: "qr_svg", label: "QR Code Vector (.svg)" },
+      { cat: "Web, Code & Encoding", value: "b64", label: "Base64 Text (.b64.txt)" },
+      { cat: "Web, Code & Encoding", value: "hex", label: "Hexadecimal Dump (.hex.txt)" },
+      { cat: "Web, Code & Encoding", value: "urlenc", label: "URL-Encoded Text (.urlenc.txt)" },
+      { cat: "Web, Code & Encoding", value: "zip", label: "ZIP Archive (.zip)" },
+      { cat: "Web, Code & Encoding", value: "tar_gz", label: "TAR.GZ Archive (.tar.gz)" }
+    ];
+
+    let backendOnline = false;
+    let fileQueue = [];
+    let sizerQueue = [];
+    let activeSizeMode = "reduce";
+
+    function fmtSize(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    }
+
+    function populateDropdowns(categoryFilter = "ALL") {
+      const filtered = categoryFilter === "ALL" ? FORMAT_OPTIONS : FORMAT_OPTIONS.filter(o => o.cat === categoryFilter);
+      const grouped = {};
+      for (const item of filtered) (grouped[item.cat] = grouped[item.cat] || []).push(item);
+
+      const html = Object.entries(grouped).map(([cat, items]) =>
+        `<optgroup label="${cat}">` + items.map(i => `<option value="${i.value}">${i.label}</option>`).join("") + `</optgroup>`
+      ).join("");
+
+      document.getElementById("targetFormat").innerHTML = html;
+      if (categoryFilter === "ALL") {
+        document.getElementById("rawTgtFormat").innerHTML = html;
+        document.getElementById("heroFormatChips").innerHTML = FORMAT_OPTIONS.map(f => `<span class="chip">${f.value.toUpperCase()}</span>`).join("");
+      }
+    }
+
+    const ALL_PAIRS = [];
+    for (const s of FORMAT_OPTIONS) {
+      for (const t of FORMAT_OPTIONS) {
+        if (s.value !== t.value) {
+          ALL_PAIRS.push({ src: s.value.toUpperCase(), tgt: t.value.toUpperCase(), tgtVal: t.value });
+        }
+      }
+    }
+    document.getElementById("pairCountHeading").textContent = `${ALL_PAIRS.length.toLocaleString()} Supported Any-to-Any Conversion Pairs`;
+
+    function renderAllPairs() {
+      const q = (document.getElementById("pairSearchInput").value || "").trim().toLowerCase();
+      const filtered = q
+        ? ALL_PAIRS.filter(p => `${p.src} to ${p.tgt}`.toLowerCase().includes(q) || `${p.src}->${p.tgt}`.toLowerCase().includes(q))
+        : ALL_PAIRS.slice(0, 300);
+
+      document.getElementById("pairGrid").innerHTML = filtered.map(p => `
+        <div class="pair-tag" onclick="pickPair('${p.tgtVal}')">
+          <span>${p.src} → ${p.tgt}</span>
+          <span style="color:var(--iitb-gold);">⚡</span>
+        </div>
+      `).join("");
+    }
+
+    function pickPair(tgtVal) {
+      document.getElementById("targetFormat").value = tgtVal;
+      switchMode("files", document.querySelector(".tab-btn"));
+    }
+
+    populateDropdowns("ALL");
+    renderAllPairs();
+
+    function filterTargets(cat, btn) {
+      document.querySelectorAll(".cat-pill").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      populateDropdowns(cat);
+    }
+
+    function switchMode(mode, btn) {
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(`mode-${mode}`).classList.add("active");
+      btn.classList.add("active");
+    }
+
+    async function checkBackend() {
+      try {
+        const res = await fetch(`${API_BASE}/api/health`);
+        if (res.ok) {
+          backendOnline = true;
+          document.getElementById("engineDot").classList.remove("offline");
+          document.getElementById("engineLabel").textContent = `Python Engine Online (${ALL_PAIRS.length.toLocaleString()} Pairs + MB↔KB Studio)`;
+          return;
+        }
+      } catch (e) {}
+      backendOnline = false;
+      document.getElementById("engineDot").classList.add("offline");
+      document.getElementById("engineLabel").textContent = "Server Offline — Run ./run.sh";
+    }
+    checkBackend();
+
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return url;
+    }
+
+    // ================= TAB 1: FILE CONVERTER =================
+    const dz = document.getElementById("dropzone");
+    dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("dragover"); });
+    dz.addEventListener("dragleave", () => dz.classList.remove("dragover"));
+    dz.addEventListener("drop", e => { e.preventDefault(); dz.classList.remove("dragover"); handleFiles(e.dataTransfer.files); });
+
+    function handleFiles(files) {
+      for (const f of files) fileQueue.push({ file: f, customTarget: "", status: "Ready", url: null, outName: null });
+      renderQueue();
+    }
+    function clearQueue() { fileQueue = []; renderQueue(); }
+    function removeQueueItem(idx) { fileQueue.splice(idx, 1); renderQueue(); }
+    function setCustomTarget(idx, val) { fileQueue[idx].customTarget = val; }
+
+    function renderQueue() {
+      const table = document.getElementById("queueTable");
+      const tbody = document.getElementById("queueBody");
+      if (!fileQueue.length) { table.style.display = "none"; return; }
+      table.style.display = "table";
+      const overrideOpts = `<option value="">Use Global Target</option>` +
+        FORMAT_OPTIONS.map(o => `<option value="${o.value}">${o.value.toUpperCase()}</option>`).join("");
+
+      tbody.innerHTML = fileQueue.map((item, idx) => {
+        const ext = item.file.name.split(".").pop().toUpperCase();
+        const badgeClass = item.status === "Done" ? "badge-done" : (item.status === "Converting..." ? "badge-working" : "badge-ready");
+        const actionHtml = item.url
+          ? `<a href="${item.url}" download="${item.outName}" class="btn btn-primary btn-sm">Download</a>`
+          : `<button class="btn btn-outline btn-sm" onclick="removeQueueItem(${idx})">Remove</button>`;
+        return `<tr><td><strong>${item.file.name}</strong></td><td><span class="chip">${ext}</span></td><td>${fmtSize(item.file.size)}</td><td><select onchange="setCustomTarget(${idx}, this.value)" style="padding:4px 8px;font-size:0.8rem;">${overrideOpts}</select></td><td><span class="badge ${badgeClass}">${item.status}</span></td><td>${actionHtml}</td></tr>`;
+      }).join("");
+    }
+
+    function getOptionsPayload() {
+      return JSON.stringify({
+        quality: parseInt(document.getElementById("optQuality").value || "92", 10),
+        resize_width: parseInt(document.getElementById("optResizeW").value || "0", 10),
+        rotate: parseInt(document.getElementById("optRotate").value || "0", 10),
+        dpi: parseInt(document.getElementById("optDpi").value || "170", 10),
+        grayscale: document.getElementById("optGrayscale").checked
+      });
+    }
+
+    async function convertAll() {
+      if (!fileQueue.length) return alert("Please add at least one file.");
+      const globalTarget = document.getElementById("targetFormat").value;
+      const mergeIntoPdf = document.getElementById("mergeIntoPdfCheck").checked;
+      const optionsJson = getOptionsPayload();
+
+      fileQueue.forEach(i => i.status = "Converting...");
+      renderQueue();
+
+      if (mergeIntoPdf && globalTarget === "pdf" && fileQueue.length > 1) {
+        const fd = new FormData();
+        fileQueue.forEach(item => fd.append("files", item.file));
+        fd.append("target_format", "pdf");
+        fd.append("merge_into_pdf", "true");
+        fd.append("options_json", optionsJson);
+
+        const res = await fetch(`${API_BASE}/api/convert`, { method: "POST", body: fd });
+        if (!res.ok) return alert("Merge failed: " + ((await res.json()).detail || "Error"));
+        const blob = await res.blob();
+        const url = triggerDownload(blob, "all2all_Merged_Bundle.pdf");
+        fileQueue.forEach(i => { i.status = "Done"; i.url = url; i.outName = "all2all_Merged_Bundle.pdf"; });
+        renderQueue();
+        return;
+      }
+
+      const zip = fileQueue.length > 1 ? new JSZip() : null;
+      for (const item of fileQueue) {
+        const tgt = item.customTarget || globalTarget;
+        const fd = new FormData();
+        fd.append("files", item.file);
+        fd.append("target_format", tgt);
+        fd.append("merge_into_pdf", "false");
+        fd.append("options_json", optionsJson);
+
+        const res = await fetch(`${API_BASE}/api/convert`, { method: "POST", body: fd });
+        if (!res.ok) {
+          item.status = "Error";
+          alert(`Failed on ${item.file.name}: ${(await res.json()).detail || "Error"}`);
+          continue;
+        }
+        const blob = await res.blob();
+        const disp = res.headers.get("Content-Disposition") || "";
+        const match = disp.match(/filename="(.+?)"/);
+        const outName = match ? match[1] : `${item.file.name.replace(/\.[^.]+$/, "")}.${tgt}`;
+        item.outName = outName;
+        item.url = URL.createObjectURL(blob);
+        item.status = "Done";
+
+        if (zip) zip.file(outName, blob);
+        else triggerDownload(blob, outName);
+      }
+      renderQueue();
+      if (zip) triggerDownload(await zip.generateAsync({ type: "blob" }), "all2all_Converted_Batch.zip");
+    }
+
+    // ================= TAB 2: MB <-> KB REDUCER & ENHANCER =================
+    function selectSizeMode(mode) {
+      activeSizeMode = mode;
+      document.querySelectorAll(".size-mode-card").forEach(c => c.classList.remove("active"));
+      document.getElementById(`card-${mode}`).classList.add("active");
+      if (mode === "reduce") {
+        document.getElementById("targetSizeVal").value = 100;
+        document.getElementById("targetSizeUnit").value = "KB";
+      } else if (mode === "enhance") {
+        document.getElementById("targetSizeVal").value = 2;
+        document.getElementById("targetSizeUnit").value = "MB";
+      }
+    }
+
+    function applySizePreset(mode, val, unit) {
+      selectSizeMode(mode);
+      document.getElementById("targetSizeVal").value = val;
+      document.getElementById("targetSizeUnit").value = unit;
+    }
+
+    const sdz = document.getElementById("sizerDropzone");
+    sdz.addEventListener("dragover", e => { e.preventDefault(); sdz.classList.add("dragover"); });
+    sdz.addEventListener("dragleave", () => sdz.classList.remove("dragover"));
+    sdz.addEventListener("drop", e => { e.preventDefault(); sdz.classList.remove("dragover"); handleSizerFiles(e.dataTransfer.files); });
+
+    function handleSizerFiles(files) {
+      for (const f of files) {
+        sizerQueue.push({ file: f, finalSize: "—", status: "Ready", url: null, outName: null });
+      }
+      renderSizerQueue();
+    }
+
+    function clearSizerQueue() { sizerQueue = []; renderSizerQueue(); }
+
+    function renderSizerQueue() {
+      const tbl = document.getElementById("sizerTable");
+      const body = document.getElementById("sizerBody");
+      if (!sizerQueue.length) { tbl.style.display = "none"; return; }
+      tbl.style.display = "table";
+      const targetStr = activeSizeMode === "hd_only"
+        ? "HD Upscale"
+        : `${document.getElementById("targetSizeVal").value} ${document.getElementById("targetSizeUnit").value}`;
+
+      body.innerHTML = sizerQueue.map((item, idx) => {
+        const badgeClass = item.status === "Done" ? "badge-done" : (item.status === "Processing..." ? "badge-working" : "badge-ready");
+        const act = item.url
+          ? `<a href="${item.url}" download="${item.outName}" class="btn btn-primary btn-sm">Download</a>`
+          : `<button class="btn btn-outline btn-sm" onclick="sizerQueue.splice(${idx},1);renderSizerQueue();">Remove</button>`;
+        return `<tr><td><strong>${item.file.name}</strong></td><td>${fmtSize(item.file.size)}</td><td><span class="chip">${targetStr}</span></td><td><strong>${item.finalSize}</strong></td><td><span class="badge ${badgeClass}">${item.status}</span></td><td>${act}</td></tr>`;
+      }).join("");
+    }
+
+    async function runSizeTransform() {
+      if (!sizerQueue.length) return alert("Please add at least one file.");
+      const val = parseFloat(document.getElementById("targetSizeVal").value || "100");
+      const unit = document.getElementById("targetSizeUnit").value;
+      const enhJson = JSON.stringify({
+        upscale_factor: parseFloat(document.getElementById("enhUpscale").value || "1.5"),
+        sharpness: parseFloat(document.getElementById("enhSharpness").value || "1.35"),
+        contrast: parseFloat(document.getElementById("enhContrast").value || "1.08"),
+        brightness: parseFloat(document.getElementById("enhBrightness").value || "1.02"),
+        denoise: document.getElementById("enhDenoise").checked
+      });
+
+      sizerQueue.forEach(i => i.status = "Processing...");
+      renderSizerQueue();
+
+      const zip = sizerQueue.length > 1 ? new JSZip() : null;
+      for (const item of sizerQueue) {
+        const fd = new FormData();
+        fd.append("files", item.file);
+        fd.append("mode", activeSizeMode);
+        fd.append("target_size_value", String(val));
+        fd.append("target_size_unit", unit);
+        fd.append("enhance_json", enhJson);
+
+        const res = await fetch(`${API_BASE}/api/size-transform`, { method: "POST", body: fd });
+        if (!res.ok) {
+          item.status = "Error";
+          alert(`Failed on ${item.file.name}: ${(await res.json()).detail || "Error"}`);
+          continue;
+        }
+        const blob = await res.blob();
+        const disp = res.headers.get("Content-Disposition") || "";
+        const match = disp.match(/filename="(.+?)"/);
+        const outName = match ? match[1] : `${activeSizeMode}_${item.file.name}`;
+        item.outName = outName;
+        item.finalSize = fmtSize(blob.size);
+        item.url = URL.createObjectURL(blob);
+        item.status = "Done";
+
+        if (zip) zip.file(outName, blob);
+        else triggerDownload(blob, outName);
+      }
+      renderSizerQueue();
+      if (zip) triggerDownload(await zip.generateAsync({ type: "blob" }), `all2all_${activeSizeMode.toUpperCase()}_Batch.zip`);
+    }
+
+    // ================= TAB 3: RAW TEXT STUDIO =================
+    function loadSampleData(kind) {
+      const srcSel = document.getElementById("rawSrcFormat");
+      const box = document.getElementById("rawInputArea");
+      if (kind === "json") {
+        srcSel.value = "json";
+        box.value = JSON.stringify([
+          { Sample_ID: "OS_01", Gene: "OsIRO2", Fold_Change: 4.82, Condition: "Fe_Deficiency" },
+          { Sample_ID: "OS_02", Gene: "OsYSL15", Fold_Change: 6.15, Condition: "Fe_Deficiency" }
+        ], null, 2);
+      } else if (kind === "fasta") {
+        srcSel.value = "fasta";
+        box.value = ">AvrPiz-t_effector Magnaporthe_oryzae\nMKFLVLLFNILCLFPVLAADNHGVGPQGASGVDPITFDINSNQTGPAFLTAVEMAGVKYLQVQHGSNVNIHRLVEGNVVIWENASTPLVLVGFLN";
+      } else if (kind === "md") {
+        srcSel.value = "md";
+        box.value = "# Experiment Summary\n\n- **Organism**: *Oryza sativa*\n- **Pathogen**: *Magnaporthe oryzae*\n- **Status**: Validated";
+      }
+    }
+
+    async function convertRawText() {
+      const txt = document.getElementById("rawInputArea").value;
+      if (!txt.trim()) return alert("Please paste or load sample content first.");
+      const fd = new FormData();
+      fd.append("text_content", txt);
+      fd.append("source_ext", document.getElementById("rawSrcFormat").value);
+      fd.append("target_format", document.getElementById("rawTgtFormat").value);
+      fd.append("filename_stem", "all2all_converted");
+      fd.append("options_json", getOptionsPayload());
+
+      const res = await fetch(`${API_BASE}/api/convert-text`, { method: "POST", body: fd });
+      if (!res.ok) return alert("Conversion failed: " + ((await res.json()).detail || "Error"));
+      const blob = await res.blob();
+      const disp = res.headers.get("Content-Disposition") || "";
+      const match = disp.match(/filename="(.+?)"/);
+      const outName = match ? match[1] : "all2all_converted.out";
+      triggerDownload(blob, outName);
+
+      if (blob.type.startsWith("text/") || blob.type.includes("json") || blob.type.includes("xml") || blob.type.includes("svg")) {
+        document.getElementById("rawPreviewArea").value = await blob.text();
+      } else {
+        document.getElementById("rawPreviewArea").value = `Generated binary file: ${outName} (${fmtSize(blob.size)}).`;
+      }
+    }
+  </script>
+</body>
+</html>
